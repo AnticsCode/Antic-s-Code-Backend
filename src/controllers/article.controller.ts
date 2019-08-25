@@ -1,10 +1,16 @@
 import { Request, Response } from 'express';
 import { Article, ARTICLE } from '../models/article.model';
+import { LIMIT } from '../config/server.config';
+import { Code } from '../interfaces/code.interface';
 
 const ARTICLE_CTRL: any = {};
 
 // GET
 ARTICLE_CTRL.getArticles = async (req: Request, res: Response) => {
+
+  const page = Number(req.query.page) || 1;
+  let skip = page - 1;
+  skip = skip * LIMIT;
 
   const articles = await Article.find({}, (err) => {
     if (err) {
@@ -14,12 +20,40 @@ ARTICLE_CTRL.getArticles = async (req: Request, res: Response) => {
         err
       });
     }
-  }).populate('user').sort({_id: -1});
+  }).limit(LIMIT)
+    .skip(skip)
+    .populate('user')
+    .sort({ _id: -1 });
 
   res.status(200).json({
     ok: true,
     message: 'Articles',
     articles
+  });
+}
+
+ARTICLE_CTRL.getArticlesCode = async (req: Request, res: Response) => {
+
+  let code: Code[] = [];
+
+  const articles = await Article.find({}, (err) => {
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        message: "Error loading Articles Code",
+        err
+      });
+    }
+  });
+
+  if (articles) {
+    articles.forEach((x: ARTICLE) => { code.push(...x.code)})
+  }
+
+  res.status(200).json({
+    ok: true,
+    message: 'Articles Code',
+    code
   });
 }
 
@@ -49,6 +83,77 @@ ARTICLE_CTRL.getArticleById = async (req: Request, res: Response) => {
       article
     });
   });
+}
+
+ARTICLE_CTRL.getArticleBySlug = async (req: Request, res: Response) => {
+
+  const slug = req.params.slug;
+
+  await Article.find({ slug }, {}, (err, articles) => {
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        message: 'Error loading Article by Slug',
+        err
+      });
+    }
+
+    if (!articles) {
+      return res.status(400).json({
+        ok: false,
+        message: "Article with Id " + slug + " doesn't exist",
+      });
+    }
+
+    res.status(200).json({
+      ok: true,
+      message: 'Article by Slug',
+      articles
+    });
+  });
+}
+
+ARTICLE_CTRL.searchArticles = async (req: Request, res: Response) => {
+
+  const value = req.params.value;
+  if (!value) {
+    return res.status(400).json({
+      ok: false,
+      message: 'Need a Value',
+    });
+  }
+
+  const page = Number(req.query.page) || 1;
+  let skip = page - 1;
+  skip = skip * LIMIT;
+
+  const filter = new RegExp (value, 'i');
+
+  const articles = await Article.find({ title: filter }, {}, (err) => {
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        message: 'Error search Articles',
+        err
+      });
+    }
+  }).limit(LIMIT)
+    .skip(skip)
+    .sort({ _id: -1 });
+
+    if (!articles) {
+      return res.status(400).json({
+        ok: false,
+        message: "Value " + value + "doesn't meet any criteria",
+      });
+    }
+
+    res.status(200).json({
+      ok: true,
+      message: 'Search Articles',
+      articles
+    });
+
 }
 
 // CREATE
