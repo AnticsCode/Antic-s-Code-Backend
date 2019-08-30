@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { Article, ARTICLE } from '../models/article.model';
+import { Stars, STARS } from '../models/stars.model';
 import { LIMIT } from '../config/server.config';
 import { Code } from '../interfaces/code.interface';
 
@@ -22,12 +23,50 @@ ARTICLE_CTRL.getArticles = async (req: Request, res: Response) => {
     }
   }).limit(LIMIT)
     .skip(skip)
-    .populate('user')
     .sort({ _id: -1 });
 
   res.status(200).json({
     ok: true,
     message: 'Articles',
+    articles
+  });
+}
+
+ARTICLE_CTRL.getAllArticles = async (req: Request, res: Response) => {
+
+  const articles = await Article.find({}, (err) => {
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        message: "Error loading Articles",
+        err
+      });
+    }
+  }).sort({ _id: -1 });
+
+  res.status(200).json({
+    ok: true,
+    message: 'Articles',
+    articles
+  });
+}
+
+ARTICLE_CTRL.getLastArticles = async (req: Request, res: Response) => {
+
+  const articles = await Article.find({}, (err) => {
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        message: "Error loading Articles",
+        err
+      });
+    }
+  }).sort({ _id: -1 })
+    .limit(6);
+
+  res.status(200).json({
+    ok: true,
+    message: 'Last Articles',
     articles
   });
 }
@@ -50,10 +89,21 @@ ARTICLE_CTRL.getArticlesCode = async (req: Request, res: Response) => {
     articles.forEach((x: ARTICLE) => { code.push(...x.code)})
   }
 
-  res.status(200).json({
-    ok: true,
-    message: 'Articles Code',
-    code
+  await Article.countDocuments((err, count) => {
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        message: "Error counting Articles",
+        err
+      });
+    }
+
+    res.status(200).json({
+      ok: true,
+      message: 'Articles Code',
+      code,
+      count
+    });
   });
 }
 
@@ -89,7 +139,7 @@ ARTICLE_CTRL.getArticleBySlug = async (req: Request, res: Response) => {
 
   const slug = req.params.slug;
 
-  await Article.find({ slug }, {}, (err, articles) => {
+  const articles = await Article.find({ slug }, {}, (err) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -97,11 +147,22 @@ ARTICLE_CTRL.getArticleBySlug = async (req: Request, res: Response) => {
         err
       });
     }
+  });
 
-    if (!articles) {
-      return res.status(400).json({
+  if (!articles) {
+    return res.status(400).json({
+      ok: false,
+      message: "Article with Id " + slug + " doesn't exist",
+    });
+  }
+
+  Article.updateOne({ slug }, { $inc: {views: 1} }, ((err) => {
+
+    if (err) {
+      return res.status(500).json({
         ok: false,
-        message: "Article with Id " + slug + " doesn't exist",
+        message: 'Error Updating Article Views',
+        err
       });
     }
 
@@ -110,50 +171,7 @@ ARTICLE_CTRL.getArticleBySlug = async (req: Request, res: Response) => {
       message: 'Article by Slug',
       articles
     });
-  });
-}
-
-ARTICLE_CTRL.searchArticles = async (req: Request, res: Response) => {
-
-  const value = req.params.value;
-  if (!value) {
-    return res.status(400).json({
-      ok: false,
-      message: 'Need a Value',
-    });
-  }
-
-  const page = Number(req.query.page) || 1;
-  let skip = page - 1;
-  skip = skip * LIMIT;
-
-  const filter = new RegExp (value, 'i');
-
-  const articles = await Article.find({ title: filter }, {}, (err) => {
-    if (err) {
-      return res.status(500).json({
-        ok: false,
-        message: 'Error search Articles',
-        err
-      });
-    }
-  }).limit(LIMIT)
-    .skip(skip)
-    .sort({ _id: -1 });
-
-    if (!articles) {
-      return res.status(400).json({
-        ok: false,
-        message: "Value " + value + "doesn't meet any criteria",
-      });
-    }
-
-    res.status(200).json({
-      ok: true,
-      message: 'Search Articles',
-      articles
-    });
-
+  }));
 }
 
 // CREATE
@@ -182,6 +200,83 @@ ARTICLE_CTRL.addArticle = async (req: Request, res: Response) => {
     });
   });
 }
+
+ARTICLE_CTRL.addLikeToArticle = async (req: Request, res: Response) => {
+
+  const id = req.params.id;
+
+  Article.updateOne({ _id: id }, { $inc: {likes: 1} } , ((err) => {
+
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        message: 'Error Updating Article Likes',
+        err
+      });
+    }
+
+    res.status(202).json({
+      ok: true,
+      message: 'Add Like to Article'
+    });
+  }));
+};
+
+ARTICLE_CTRL.addStarsToArticle = async (req: Request, res: Response) => {
+
+  const id = req.params.id;
+  const body = req.body;
+
+  const stars = await Stars.find({ article: id }, {}, (err) => {
+
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        message: 'Error loading Stars by Article Id',
+        err
+      });
+    }
+  });
+
+  if (!stars) {
+    return res.status(400).json({
+      ok: false,
+      message: "Stars on Article Id " + id + " doesn't exist",
+    });
+  }
+
+  stars[0].stars.push(body.stars);
+  const sum = stars[0].stars.reduce((previous, current) => current += previous);
+  let avg = sum / stars[0].stars.length;
+
+  if (sum && avg) { avg = Math.floor(avg); }
+
+  Stars.updateOne({ article: id }, stars[0], ((err) => {
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        message: 'Error Updating Stars with Article Id ' + id,
+        err
+      });
+    }
+  }));
+
+  Article.updateOne({ _id: id }, {$set: {'stars': avg }}, ((err) => {
+
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        message: 'Error Updating Article Stars',
+        err
+      });
+    }
+
+    res.status(202).json({
+      ok: true,
+      message: 'Add Stars to Article'
+    });
+  }));
+};
 
 // UPDATE
 ARTICLE_CTRL.updateArticle = async (req: Request, res: Response) => {

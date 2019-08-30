@@ -5,7 +5,7 @@ const ErrorSchema = new Schema({
   status: { type: Number, required: [true, 'Status required'] },
   statusText: { type: String, required: [true, 'StatusText required'] },
   url: { type: String, required: [true, 'URL required'] },
-  author: { type: String, required: false}
+  author: { type: String, required: false }
 });
 
 export interface ERROR extends Document {

@@ -1,5 +1,6 @@
 import { Schema, model, Document } from 'mongoose';
 import moment from 'moment';
+import 'moment/locale/es'
 import { Code } from '../interfaces/code.interface';
 import { Link } from '../interfaces/link.interface';
 
@@ -23,6 +24,7 @@ const ArticleSchema = new Schema({
   created: { type: String, required: [true, 'Date required'] },
   cover: { type: String, required: [true, 'Cover required'] },
   tags: { type: Array, required: [true, 'Tags required'] },
+  badges: { type: Array, required: [true, 'Badges required'] },
   summary: { type: String, required: [true, 'Summary required'] },
   code: { type: Array, required: false },
   level: { type: String, required: [true, 'Level required'], enum: level },
@@ -33,7 +35,7 @@ const ArticleSchema = new Schema({
 });
 
 ArticleSchema.pre<ARTICLE>('validate', function (next) {
-  this.created = moment().format('LL');
+  this.created = moment().locale('es').format('LL');
   next();
 });
 
@@ -53,6 +55,7 @@ export interface ARTICLE extends Document {
   likes: number;
   stars: number;
   views: number;
+  badges: string[],
   links: Link[];
   summary: string;
 }
