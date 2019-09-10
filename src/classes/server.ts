@@ -7,10 +7,10 @@ export default class Server {
 
   constructor() {
     this.app = express();
-    this.app.set('port', PORT);
+    this.app.set('port', this.port);
   }
 
-  listen(callback: () => void) {
+  public listen(callback: () => void) {
     this.app.listen(this.app.get('port'), callback);
   }
 }

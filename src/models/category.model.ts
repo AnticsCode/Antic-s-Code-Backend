@@ -1,7 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
-import { Code } from '../interfaces/code.interface';
-import { Link } from '../interfaces/link.interface';
-import { Info } from '../interfaces/info.interface';
+import { Code, Link, Info } from '../interfaces/interfaces';
 
 const categories = {
   values: ['HTML', 'CSS', 'Javascript', 'Angular', 'Nodejs', 'MongoDB'],

@@ -4,7 +4,6 @@ import { Stars } from '../models/stars.model';
 
 export const CreateStars = async (req: Request, res: Response, next: NextFunction) => {
 
-  const body = req.body;
   const id = req.params.id;
 
   const stars = await Stars.find({ article: id }, {}, (err) => {

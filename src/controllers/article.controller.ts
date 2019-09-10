@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { Article, ARTICLE } from '../models/article.model';
-import { Stars, STARS } from '../models/stars.model';
+import { Stars } from '../models/stars.model';
 import { LIMIT } from '../config/server.config';
-import { Code } from '../interfaces/code.interface';
+import { Code } from '../interfaces/interfaces';
 
 const ARTICLE_CTRL: any = {};
 
@@ -13,7 +13,14 @@ ARTICLE_CTRL.getArticles = async (req: Request, res: Response) => {
   let skip = page - 1;
   skip = skip * LIMIT;
 
-  const articles = await Article.find({}, (err) => {
+  const filter = {
+    message: 0,
+    code: 0,
+    links: 0,
+    index: 0
+  }
+
+  const articles = await Article.find({}, filter, (err) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -31,7 +38,7 @@ ARTICLE_CTRL.getArticles = async (req: Request, res: Response) => {
     articles
   });
 }
-
+// CMS ONLY
 ARTICLE_CTRL.getAllArticles = async (req: Request, res: Response) => {
 
   const articles = await Article.find({}, (err) => {
@@ -51,9 +58,37 @@ ARTICLE_CTRL.getAllArticles = async (req: Request, res: Response) => {
   });
 }
 
+ARTICLE_CTRL.getArticlesCount = async (req: Request, res: Response) => {
+
+  Article.countDocuments((err, count) => {
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        message: "Error counting Articles",
+        err
+      });
+    }
+
+    res.status(200).json({
+      ok: true,
+      message: 'Articles Count',
+      count
+    });
+  });
+}
+
 ARTICLE_CTRL.getLastArticles = async (req: Request, res: Response) => {
 
-  const articles = await Article.find({}, (err) => {
+  const filter = {
+    message: 0,
+    index: 0,
+    code: 0,
+    links: 0,
+    summary: 0,
+    author: 0
+  }
+
+  const articles = await Article.find({}, filter, (err) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -71,11 +106,38 @@ ARTICLE_CTRL.getLastArticles = async (req: Request, res: Response) => {
   });
 }
 
+ARTICLE_CTRL.getMostLikedArticles = async (req: Request, res: Response) => {
+
+  const filter = {
+    likes: 1,
+    title: 1,
+    slug: 1,
+    cover: 1
+  }
+
+  const articles = await Article.find({}, filter, (err) => {
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        message: "Error loading Articles",
+        err
+      });
+    }
+  }).sort({ likes: -1 })
+    .limit(4);
+
+  res.status(200).json({
+    ok: true,
+    message: 'Most Liked Articles',
+    articles
+  });
+}
+
 ARTICLE_CTRL.getArticlesCode = async (req: Request, res: Response) => {
 
   let code: Code[] = [];
 
-  const articles = await Article.find({}, (err) => {
+  const articles = await Article.find({}, {code: 1}, (err) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -89,21 +151,10 @@ ARTICLE_CTRL.getArticlesCode = async (req: Request, res: Response) => {
     articles.forEach((x: ARTICLE) => { code.push(...x.code)})
   }
 
-  await Article.countDocuments((err, count) => {
-    if (err) {
-      return res.status(500).json({
-        ok: false,
-        message: "Error counting Articles",
-        err
-      });
-    }
-
-    res.status(200).json({
-      ok: true,
-      message: 'Articles Code',
-      code,
-      count
-    });
+  res.status(200).json({
+    ok: true,
+    message: 'Articles Code',
+    code
   });
 }
 

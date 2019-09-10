@@ -4,6 +4,7 @@ import { Category, CATEGORY } from '../models/category.model';
 const CATEGORY_CTRL: any = {};
 
 // GET
+// CMS ONLY
 CATEGORY_CTRL.getCategories = async (req: Request, res: Response) => {
 
   const categories = await Category.find({}, (err) => {
@@ -14,15 +15,15 @@ CATEGORY_CTRL.getCategories = async (req: Request, res: Response) => {
         err
       });
     }
-  }).populate('user').sort({_id: -1});
+  }).sort({ _id: -1 });
 
   res.status(200).json({
     ok: true,
-    message: 'Categories',
+    message: 'All Categories',
     categories
   });
 }
-
+// CMS ONLY
 CATEGORY_CTRL.getCategoryById = async (req: Request, res: Response) => {
 
   const id = req.params.id;
@@ -46,6 +47,35 @@ CATEGORY_CTRL.getCategoryById = async (req: Request, res: Response) => {
     res.status(200).json({
       ok: true,
       message: 'Category by Id',
+      category
+    });
+  });
+}
+
+CATEGORY_CTRL.getCategoryByName = async (req: Request, res: Response) => {
+
+  const name = req.params.name;
+
+  Category.find({ category: name }, {}, (err, category) => {
+    if (err) {
+      return res.status(500).json({
+
+        ok: false,
+        message: 'Error loading Category by Name',
+        err
+      });
+    }
+
+    if (!category) {
+      return res.status(400).json({
+        ok: false,
+        message: "Category with Name " + name + " doesn't exist",
+      });
+    }
+
+    res.status(200).json({
+      ok: true,
+      message: 'Category by Name',
       category
     });
   });

@@ -1,8 +1,7 @@
 import { Schema, model, Document } from 'mongoose';
 import moment from 'moment';
 import 'moment/locale/es'
-import { Code } from '../interfaces/code.interface';
-import { Link } from '../interfaces/link.interface';
+import { Code, Link, Index } from '../interfaces/interfaces';
 
 const Slugs = require('mongoose-url-slugs');
 
@@ -31,7 +30,8 @@ const ArticleSchema = new Schema({
   likes: { type: Number, required: false, default: 0 },
   stars: { type: Number, required: false, default: 0 },
   views: { type: Number, required: false, default: 0 },
-  links: { type: Array, required: [true, 'Links required']}
+  links: { type: Array, required: [true, 'Links required'] },
+  index: { type: Array, required: [true, 'Index required'] }
 });
 
 ArticleSchema.pre<ARTICLE>('validate', function (next) {
@@ -55,9 +55,10 @@ export interface ARTICLE extends Document {
   likes: number;
   stars: number;
   views: number;
-  badges: string[],
+  badges: string[];
   links: Link[];
   summary: string;
+  index: Index[];
 }
 
 export const Article = model<ARTICLE>('Article', ArticleSchema);
