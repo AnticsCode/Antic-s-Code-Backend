@@ -5,6 +5,6 @@ import { verifyToken } from "../../middlewares/auth";
 const AUTH_ROUTES = Router();
 
 AUTH_ROUTES.get('/token', verifyToken, AUTH_CTRL.getUserByToken); // Verify
-AUTH_ROUTES.post('/token', AUTH_CTRL.refreshToken); // Token
+AUTH_ROUTES.post('/token/:id', AUTH_CTRL.refreshToken); // Token
 
 export default AUTH_ROUTES;

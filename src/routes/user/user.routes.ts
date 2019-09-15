@@ -4,9 +4,10 @@ import { verifyToken } from "../../middlewares/auth";
 
 const USER_ROUTES = Router();
 
-USER_ROUTES.get('/users', USER_CTRL.getUsers);
-USER_ROUTES.post('/users', USER_CTRL.createUser);
-USER_ROUTES.put('/users', verifyToken, USER_CTRL.updateUser);
-USER_ROUTES.delete('/users', verifyToken, USER_CTRL.deleteUser);
+USER_ROUTES.get('/users', USER_CTRL.getUsers)
+.get('/users/:id', USER_CTRL.getUserById)
+.post('/users', USER_CTRL.createUser)
+.put('/users', verifyToken, USER_CTRL.updateUser)
+.delete('/users', verifyToken, USER_CTRL.deleteUser);
 
 export default USER_ROUTES;

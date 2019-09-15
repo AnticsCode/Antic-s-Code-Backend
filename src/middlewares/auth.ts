@@ -12,7 +12,7 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
   }
   const payload: any = Token.checkToken(token);
 
-  if ( payload === undefined) {
+  if (payload === undefined) {
     return res.status(401).json({
       ok: false,
       message: "Incorrect Token!"

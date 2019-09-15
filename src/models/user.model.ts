@@ -11,7 +11,6 @@ const UserSchema = new Schema({
   name: { type: String, required: [true, 'Name required'] },
   password: { type: String, required: [true, 'Password required'] },
   email: { type: String, unique: true, required: [true, 'Email required'] },
-  avatar: { type: String, default: 'av-1.png', required: false },
   account: {
     type: String,
     required: [true, 'Account required'],
@@ -37,7 +36,6 @@ export interface USER extends Document {
   name: string;
   password: string;
   email: string;
-  avatar?: string;
   account: string;
   checkPassword(password: string): boolean;
 }

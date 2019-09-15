@@ -157,7 +157,7 @@ ARTICLE_CTRL.getArticlesCode = async (req: Request, res: Response) => {
     code
   });
 }
-
+// CMS ONLY
 ARTICLE_CTRL.getArticleById = async (req: Request, res: Response) => {
 
   const id = req.params.id;
@@ -224,7 +224,7 @@ ARTICLE_CTRL.getArticleBySlug = async (req: Request, res: Response) => {
     });
   }));
 }
-
+// CMS ONLY
 // CREATE
 ARTICLE_CTRL.addArticle = async (req: Request, res: Response) => {
 
@@ -328,7 +328,7 @@ ARTICLE_CTRL.addStarsToArticle = async (req: Request, res: Response) => {
     });
   }));
 };
-
+// CMS ONLY
 // UPDATE
 ARTICLE_CTRL.updateArticle = async (req: Request, res: Response) => {
 
@@ -365,7 +365,7 @@ ARTICLE_CTRL.updateArticle = async (req: Request, res: Response) => {
     });
   });
 }
-
+// CMS ONLY
 // DELETE
 ARTICLE_CTRL.deleteArticleById = async (req: Request, res: Response) => {
 

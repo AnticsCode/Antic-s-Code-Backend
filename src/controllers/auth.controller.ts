@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { USER } from '../models/user.model';
+import { USER, User } from '../models/user.model';
 import Token from '../classes/token';
 
 const AUTH_CTRL: any = {};
@@ -7,6 +7,13 @@ const AUTH_CTRL: any = {};
 AUTH_CTRL.getUserByToken = async (req: Request, res: Response) => {
 
   const user = req.user;
+
+  if (!user) {
+    return res.status(500).json({
+      ok: false,
+      message: "Error loading User by Token"
+    });
+  }
 
   res.status(200).json({
     ok: true,
@@ -17,16 +24,33 @@ AUTH_CTRL.getUserByToken = async (req: Request, res: Response) => {
 
 AUTH_CTRL.refreshToken = async (req: Request, res: Response) => {
 
-  const user: USER = req.body;
-  const token = Token.createToken(user);
+  const id = req.params.id;
 
-  res.status(200).json({
-    ok: true,
-    message: 'Refresh Token',
-    token,
-    user
+  await User.findById(id, (err, user) => {
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        message: 'Error loading User by Id',
+        err
+      });
+    }
+
+    if (!user) {
+      return res.status(400).json({
+        ok: false,
+        message: "User with Id " + id + " doesn't exist",
+      });
+    }
+
+    const token = Token.createToken(user);
+
+    res.status(200).json({
+      ok: true,
+      message: 'User by Id',
+      user,
+      token
+    });
   });
-
 }
 
 export default AUTH_CTRL;

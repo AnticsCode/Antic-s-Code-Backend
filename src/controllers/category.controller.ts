@@ -80,7 +80,7 @@ CATEGORY_CTRL.getCategoryByName = async (req: Request, res: Response) => {
     });
   });
 }
-
+// CMS ONLY
 // CREATE
 CATEGORY_CTRL.addCategory = async (req: Request, res: Response) => {
 
@@ -107,7 +107,7 @@ CATEGORY_CTRL.addCategory = async (req: Request, res: Response) => {
     });
   });
 }
-
+// CMS ONLY
 // UPDATE
 CATEGORY_CTRL.updateCategory = async (req: Request, res: Response) => {
 
@@ -144,7 +144,7 @@ CATEGORY_CTRL.updateCategory = async (req: Request, res: Response) => {
     });
   });
 }
-
+// CMS ONLY
 // DELETE
 CATEGORY_CTRL.deleteCategoryById = async (req: Request, res: Response) => {
 

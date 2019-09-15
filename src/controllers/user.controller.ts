@@ -6,6 +6,7 @@ import Token from '../classes/token';
 const USER_CTRL: any = {};
 
 // GET
+// CMS ONLY
 USER_CTRL.getUsers = async (req: Request, res: Response) => {
 
   await User.find({}, {}, (err, users) => {
@@ -21,6 +22,34 @@ USER_CTRL.getUsers = async (req: Request, res: Response) => {
       ok: true,
       message: 'Users',
       users
+    });
+  });
+}
+
+USER_CTRL.getUserById = async (req: Request, res: Response) => {
+
+  const id = req.params.id;
+
+  await User.findById(id, (err, user) => {
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        message: 'Error loading User by Id',
+        err
+      });
+    }
+
+    if (!user) {
+      return res.status(400).json({
+        ok: false,
+        message: "User with Id " + id + " doesn't exist",
+      });
+    }
+
+    res.status(200).json({
+      ok: true,
+      message: 'User by Id',
+      user
     });
   });
 }
@@ -76,7 +105,6 @@ USER_CTRL.updateUser = async (req: Request, res: Response) => {
   const data = {
     name: body.name,
     email: body.email,
-    avatar: body.avatar || req.user.avatar
   }
 
   User.findByIdAndUpdate(id, data, { new: true }, (err, user) => {
