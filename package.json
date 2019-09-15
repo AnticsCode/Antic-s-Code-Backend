@@ -33,6 +33,7 @@
     "@types/mongoose": "^5.5.17",
     "@types/mongoose-unique-validator": "^1.0.1",
     "@types/morgan": "^1.7.37",
+    "dotenv": "^8.1.0",
     "morgan": "^1.9.1"
   }
 }

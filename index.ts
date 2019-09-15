@@ -2,13 +2,18 @@ import Server from "./src/classes/server";
 import express from 'express';
 import cors from 'cors';
 import ROUTES from "./src/routes/routes.index";
-// import morgan from 'morgan';
+import morgan from 'morgan';
 
+// Environment
+const env = require('dotenv');
+env.config();
+
+// Database
 const { moongose } = require('./src/db/database');
 const server = new Server();
 
 // Middlewares
-// server.app.use(morgan('dev'));
+server.app.use(morgan('dev'));
 server.app.use(express.json());
 server.app.use(cors());
 server.app.use(express.urlencoded({ extended: false }));  // Body Parse
