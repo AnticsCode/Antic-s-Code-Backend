@@ -5,7 +5,9 @@ import Token from '../classes/token';
 const LOGIN_CTRL: any = {};
 
 LOGIN_CTRL.loginUser = async (req: Request, res: Response) => {
+
   const body: USER = req.body;
+
   await User.findOne({ email: body.email }, {}, (err, user) => {
     if (err) {
       return res.status(500).json({
@@ -18,14 +20,14 @@ LOGIN_CTRL.loginUser = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(406).json({
         ok: false,
-        message: 'Incorrect credentials (Email)'
+        message: 'Incorrect credentials'  // Email
       });
     }
 
     if (!user.checkPassword(body.password)) {
       return res.status(406).json({
         ok: false,
-        message: "Incorrect credentials (Password)"
+        message: "Incorrect credentials"  // Password
       });
     }
     user.password = '';

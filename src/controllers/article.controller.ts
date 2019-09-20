@@ -3,13 +3,15 @@ import { Article, ARTICLE } from '../models/article.model';
 import { Stars } from '../models/stars.model';
 import { LIMIT } from '../config/server.config';
 import { Code } from '../interfaces/interfaces';
+import { countBy } from 'lodash';
 
 const ARTICLE_CTRL: any = {};
 
 // GET
 ARTICLE_CTRL.getArticles = async (req: Request, res: Response) => {
 
-  const page = Number(req.query.page) || 1;
+  let page = Number(req.query.page) || 1;
+  if (page < 0) page = 1;
   let skip = page - 1;
   skip = skip * LIMIT;
 
@@ -35,9 +37,11 @@ ARTICLE_CTRL.getArticles = async (req: Request, res: Response) => {
   res.status(200).json({
     ok: true,
     message: 'Articles',
+    page,
     articles
   });
 }
+
 // CMS ONLY
 ARTICLE_CTRL.getAllArticles = async (req: Request, res: Response) => {
 
@@ -75,6 +79,42 @@ ARTICLE_CTRL.getArticlesCount = async (req: Request, res: Response) => {
       count
     });
   });
+}
+
+ARTICLE_CTRL.getArticlesByCategory = async (req: Request, res: Response) => {
+  res.status(200).json({
+    ok: true,
+    message: 'Everything OK'
+  })
+}
+
+ARTICLE_CTRL.getArticlesByCategoryCount = async (req: Request, res: Response) => {
+
+  const filter = {
+    category: 1,
+    _id: 0
+  }
+
+  const articles = await Article.find({}, filter, (err) => {
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        message: "Error loading Articles",
+        err
+      });
+    }
+  }).sort({ _id: -1 });
+
+  if (articles) {
+    const array = articles.map((a: ARTICLE) => a.category);
+    const count = countBy(array);
+
+    res.status(200).json({
+      ok: true,
+      message: 'Articles By Category Count',
+      count
+    });
+  }
 }
 
 ARTICLE_CTRL.getLastArticles = async (req: Request, res: Response) => {
@@ -157,6 +197,7 @@ ARTICLE_CTRL.getArticlesCode = async (req: Request, res: Response) => {
     code
   });
 }
+
 // CMS ONLY
 ARTICLE_CTRL.getArticleById = async (req: Request, res: Response) => {
 
@@ -224,6 +265,7 @@ ARTICLE_CTRL.getArticleBySlug = async (req: Request, res: Response) => {
     });
   }));
 }
+
 // CMS ONLY
 // CREATE
 ARTICLE_CTRL.addArticle = async (req: Request, res: Response) => {
@@ -328,6 +370,7 @@ ARTICLE_CTRL.addStarsToArticle = async (req: Request, res: Response) => {
     });
   }));
 };
+
 // CMS ONLY
 // UPDATE
 ARTICLE_CTRL.updateArticle = async (req: Request, res: Response) => {
@@ -365,6 +408,7 @@ ARTICLE_CTRL.updateArticle = async (req: Request, res: Response) => {
     });
   });
 }
+
 // CMS ONLY
 // DELETE
 ARTICLE_CTRL.deleteArticleById = async (req: Request, res: Response) => {

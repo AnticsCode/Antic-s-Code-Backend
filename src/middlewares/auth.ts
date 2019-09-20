@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import Token from '../classes/token';
 
 export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
+
   const token = req.get('x-Token') || '';
 
   if (!token) {

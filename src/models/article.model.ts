@@ -1,6 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
 import moment from 'moment';
-import 'moment/locale/es'
 import { Code, Link, Index } from '../interfaces/interfaces';
 
 const Slugs = require('mongoose-url-slugs');
@@ -35,7 +34,7 @@ const ArticleSchema = new Schema({
 });
 
 ArticleSchema.pre<ARTICLE>('validate', function (next) {
-  this.created = moment().locale('es').format('LL');
+  this.created = moment().format('L');
   next();
 });
 

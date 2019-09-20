@@ -3,29 +3,50 @@ import { Error, ERROR } from '../models/error.model';
 
 const ERROR_CTRL: any = {};
 
+
+// READ
+// CMS ONLY
+ERROR_CTRL.getErrors = async (req: Request, res: Response) => {
+
+  const errors = await Error.find({}, (err) => {
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        message: "Error loading Errors XD",
+        err
+      });
+    }
+  }).sort({ _id: -1 });
+
+  res.status(200).json({
+    ok: true,
+    message: 'Errors',
+    errors
+  });
+}
+
 // CREATE
 ERROR_CTRL.saveError = async (req: Request, res: Response) => {
 
-  const body: ERROR = req.body;
+  const error: ERROR = req.body;
 
-  if (body.name == '' || body.status == null ||
-      body.statusText == '' || body.url == '') {
-    return res.status(400).json({
-      ok: false,
-      message: 'Error needs Name, Status, StatusText and URL',
-    });
+  if (error.name == '' || error.status == null ||
+      error.text == '' || error.url == '' || error.message == '') {
+      return res.status(400).json({
+        ok: false,
+        message: 'Error needs Name, Status, Text and URL',
+      });
   }
 
-  Error.create(body).then(article => {
+  Error.create(error).then(() => {
     res.status(201).json({
       ok: true,
-      message: 'Error added',
-      article
+      message: 'Error added'
     });
   }).catch(err => {
     return res.status(500).json({
       ok: false,
-      message: 'Error adding Error',
+      message: 'Error adding Error XD',
       err
     });
   });
