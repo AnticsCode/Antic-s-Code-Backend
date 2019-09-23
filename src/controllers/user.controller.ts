@@ -95,6 +95,13 @@ USER_CTRL.updateUser = async (req: Request, res: Response) => {
   const body: USER = req.body;
   const id = req.user._id;
 
+  if (id !== body._id) {
+    return res.status(400).json({
+      ok: false,
+      message: "You can only update yourself",
+    });
+  }
+
   if (body.name == '' || body.email == '') {
     return res.status(400).json({
       ok: false,
@@ -102,12 +109,7 @@ USER_CTRL.updateUser = async (req: Request, res: Response) => {
     });
   }
 
-  const data = {
-    name: body.name,
-    email: body.email,
-  }
-
-  User.findByIdAndUpdate(id, data, { new: true }, (err, user) => {
+  User.findByIdAndUpdate(id, body, { new: true }, (err, user) => {
     if (err) {
       return res.status(500).json({
         ok: false,

@@ -29,3 +29,14 @@ export interface Index {
   subtitle: string;
   id: string;
 }
+
+export interface UserProfile {
+  avatar?: string;
+  rol?: string;
+  bio?: string;
+  facebook?: string;
+  twitter?: string;
+  github?: string;
+  portfolio?: string;
+  language?: string;
+}

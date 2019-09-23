@@ -16,7 +16,7 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
   if (payload === undefined) {
     return res.status(401).json({
       ok: false,
-      message: "Incorrect Token!"
+      message: "Incorrect Token! (Refresh)"
     });
   }
   req.user = payload.user;

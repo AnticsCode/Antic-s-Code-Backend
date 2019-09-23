@@ -1,9 +1,10 @@
 import { Schema, model, Document } from 'mongoose';
 import bcrypt from 'bcrypt';
 import validator from 'mongoose-unique-validator';
+import { UserProfile } from '../interfaces/interfaces';
 
 const roles = {
-  values: ['Admin', 'User', 'Guest'],
+  values: ['Super', 'Admin', 'User', 'Guest'],
   message: '{VALUE} is not an available Rol'
 }
 
@@ -16,7 +17,8 @@ const UserSchema = new Schema({
     required: [true, 'Account required'],
     default: 'User',
     enum: roles
-  }
+  },
+  profile: { type: Object, required: false, default: {} }
 });
 
 UserSchema.plugin(validator, { message: '{PATH} must be unique' });
@@ -37,6 +39,7 @@ export interface USER extends Document {
   password: string;
   email: string;
   account: string;
+  profile: UserProfile;
   checkPassword(password: string): boolean;
 }
 
