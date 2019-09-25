@@ -30,7 +30,8 @@ const ArticleSchema = new Schema({
   stars: { type: Number, required: false, default: 0 },
   views: { type: Number, required: false, default: 0 },
   links: { type: Array, required: [true, 'Links required'] },
-  index: { type: Array, required: [true, 'Index required'] }
+  index: { type: Array, required: [true, 'Index required'] },
+  draft: { type: Boolean, required: false, default: true }
 });
 
 ArticleSchema.pre<ARTICLE>('validate', function (next) {
@@ -58,6 +59,7 @@ export interface ARTICLE extends Document {
   links: Link[];
   summary: string;
   index: Index[];
+  draft: boolean;
 }
 
 export const Article = model<ARTICLE>('Article', ArticleSchema);

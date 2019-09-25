@@ -22,7 +22,7 @@ ARTICLE_CTRL.getArticles = async (req: Request, res: Response) => {
     index: 0
   }
 
-  const articles = await Article.find({}, filter, (err) => {
+  const articles = await Article.find({draft: false}, filter, (err) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -64,7 +64,7 @@ ARTICLE_CTRL.getAllArticles = async (req: Request, res: Response) => {
 
 ARTICLE_CTRL.getArticlesCount = async (req: Request, res: Response) => {
 
-  Article.countDocuments((err, count) => {
+  Article.countDocuments({draft: false}, (err, count) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -78,6 +78,33 @@ ARTICLE_CTRL.getArticlesCount = async (req: Request, res: Response) => {
       message: 'Articles Count',
       count
     });
+  });
+}
+
+ARTICLE_CTRL.getArticlesByUser = async (req: Request, res: Response) => {
+
+  const filter = {
+    title: 1,
+    slug: 1,
+    draft: 1
+  };
+
+  const name = req.user.name;
+
+  const articles = await Article.find({author: name}, filter, (err) => {
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        message: "Error loading Articles",
+        err
+      });
+    }
+  }).sort({ _id: -1 });
+
+  res.status(200).json({
+    ok: true,
+    message: 'Articles by User',
+    articles
   });
 }
 
@@ -95,7 +122,7 @@ ARTICLE_CTRL.getArticlesByCategoryCount = async (req: Request, res: Response) =>
     _id: 0
   }
 
-  const articles = await Article.find({}, filter, (err) => {
+  const articles = await Article.find({draft: false}, filter, (err) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -128,7 +155,7 @@ ARTICLE_CTRL.getLastArticles = async (req: Request, res: Response) => {
     author: 0
   }
 
-  const articles = await Article.find({}, filter, (err) => {
+  const articles = await Article.find({draft: false}, filter, (err) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -155,7 +182,7 @@ ARTICLE_CTRL.getMostLikedArticles = async (req: Request, res: Response) => {
     cover: 1
   }
 
-  const articles = await Article.find({}, filter, (err) => {
+  const articles = await Article.find({draft: false}, filter, (err) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -177,7 +204,7 @@ ARTICLE_CTRL.getArticlesCode = async (req: Request, res: Response) => {
 
   let code: Code[] = [];
 
-  const articles = await Article.find({}, {code: 1}, (err) => {
+  const articles = await Article.find({draft: false}, {code: 1}, (err) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -248,8 +275,15 @@ ARTICLE_CTRL.getArticleBySlug = async (req: Request, res: Response) => {
     });
   }
 
-  Article.updateOne({ slug }, { $inc: {views: 1} }, ((err) => {
+  if (articles[0].draft) {
+   return res.status(200).json({
+      ok: true,
+      message: 'Article Draft by Slug',
+      articles
+    });
+  }
 
+  Article.updateOne({ slug }, { $inc: {views: 1} }, ((err) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -315,61 +349,30 @@ ARTICLE_CTRL.addLikeToArticle = async (req: Request, res: Response) => {
   }));
 };
 
-ARTICLE_CTRL.addStarsToArticle = async (req: Request, res: Response) => {
+ARTICLE_CTRL.publishArticle = async (req: Request, res: Response) => {
 
   const id = req.params.id;
-  const body = req.body;
+  const draft = req.body;
 
-  const stars = await Stars.find({ article: id }, {}, (err) => {
+  console.log(id);
+  console.log(draft);
 
-    if (err) {
-      return res.status(500).json({
-        ok: false,
-        message: 'Error loading Stars by Article Id',
-        err
-      });
-    }
-  });
-
-  if (!stars) {
-    return res.status(400).json({
-      ok: false,
-      message: "Stars on Article Id " + id + " doesn't exist",
-    });
-  }
-
-  stars[0].stars.push(body.stars);
-  const sum = stars[0].stars.reduce((previous, current) => current += previous);
-  let avg = sum / stars[0].stars.length;
-
-  if (sum && avg) { avg = Math.floor(avg); }
-
-  Stars.updateOne({ article: id }, stars[0], ((err) => {
-    if (err) {
-      return res.status(500).json({
-        ok: false,
-        message: 'Error Updating Stars with Article Id ' + id,
-        err
-      });
-    }
-  }));
-
-  Article.updateOne({ _id: id }, {$set: {'stars': avg }}, ((err) => {
+  Article.updateOne({ _id: id }, { $set: draft }, ((err) => {
 
     if (err) {
       return res.status(500).json({
         ok: false,
-        message: 'Error Updating Article Stars',
+        message: 'Error Publishing Article',
         err
       });
     }
 
     res.status(202).json({
       ok: true,
-      message: 'Add Stars to Article'
+      message: 'Article Published'
     });
   }));
-};
+}
 
 // CMS ONLY
 // UPDATE

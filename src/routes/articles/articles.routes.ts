@@ -1,6 +1,6 @@
 import { Router } from "express";
 import ARTICLES_CTRL from "../../controllers/article.controller";
-import { CreateStars } from "../../middlewares/stars";
+import { verifyToken } from "../../middlewares/auth";
 
 const ARTICLES_ROUTE = Router();
 
@@ -11,12 +11,13 @@ ARTICLES_ROUTE
 .get('/articles/liked', ARTICLES_CTRL.getMostLikedArticles)
 .get('/articles/code', ARTICLES_CTRL.getArticlesCode)
 .get('/articles/count', ARTICLES_CTRL.getArticlesCount)
+.get('/articles/user', verifyToken, ARTICLES_CTRL.getArticlesByUser)
 .get('/article/:slug', ARTICLES_CTRL.getArticleBySlug)
 .get('/articles/:id', ARTICLES_CTRL.getArticleById) // CMS
 .get('/articles/category/:name', ARTICLES_CTRL.getArticlesByCategory)
 .get('/articles/categories/count', ARTICLES_CTRL.getArticlesByCategoryCount)
 .post('/articles/likes/:id', ARTICLES_CTRL.addLikeToArticle)
-.post('/articles/stars/:id', CreateStars, ARTICLES_CTRL.addStarsToArticle)
+.post('/articles/publish/:id', ARTICLES_CTRL.publishArticle)
 .post('/articles', ARTICLES_CTRL.addArticle) // CMS
 .put('/articles/:id', ARTICLES_CTRL.updateArticle) // CMS
 .delete('/articles/:id', ARTICLES_CTRL.deleteArticleById); // CMS

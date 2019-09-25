@@ -30,8 +30,7 @@ UserSchema.methods.toJSON = function() {
 }
 
 UserSchema.method('checkPassword', function (password: string = ''): boolean {
-  if (bcrypt.compareSync(password, this.password)) { return true }
-  else { return false }
+  return bcrypt.compareSync(password, this.password) ? true : false;
 });
 
 export interface USER extends Document {

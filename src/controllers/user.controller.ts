@@ -6,7 +6,6 @@ import Token from '../classes/token';
 const USER_CTRL: any = {};
 
 // GET
-// CMS ONLY
 USER_CTRL.getUsers = async (req: Request, res: Response) => {
 
   await User.find({}, {}, (err, users) => {
