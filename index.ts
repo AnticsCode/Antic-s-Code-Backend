@@ -2,7 +2,7 @@ import Server from "./src/classes/server";
 import express from 'express';
 import cors from 'cors';
 import ROUTES from "./src/routes/routes.index";
-// import morgan from 'morgan';
+import morgan from 'morgan';
 
 // Envinronment
 // const env = require('dotenv');

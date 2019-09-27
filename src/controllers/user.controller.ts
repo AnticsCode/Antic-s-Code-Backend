@@ -53,6 +53,39 @@ USER_CTRL.getUserById = async (req: Request, res: Response) => {
   });
 }
 
+USER_CTRL.getUserByName = async (req: Request, res: Response) => {
+
+  const filter = {
+    name: 1,
+    profile: 1
+  }
+
+  const name = req.params.name;
+
+  await User.findOne({name}, filter, (err, user) => {
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        message: 'Error loading User by Name',
+        err
+      });
+    }
+
+    if (!user) {
+      return res.status(400).json({
+        ok: false,
+        message: "User with Name " + name + " doesn't exist",
+      });
+    }
+
+    res.status(200).json({
+      ok: true,
+      message: 'User by Name',
+      user
+    });
+  });
+}
+
 // CREATE
 USER_CTRL.createUser = async (req: Request, res: Response) => {
 
