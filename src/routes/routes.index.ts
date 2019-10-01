@@ -6,6 +6,7 @@ import USER_ROUTES from './user/user.routes';
 import LOGIN_ROUTES from './login/login.routes';
 import AUTH_ROUTES from './auth/auth.routes';
 import ERRORS_ROUTE from './errors/errors.route';
+import SEARCH_ROUTE from './search/search.route';
 
 const ROUTES = Router();
 
@@ -17,6 +18,7 @@ ROUTES.use('/',
     AUTH_ROUTES,
     ARTICLES_ROUTE,
     CATEGORIES_ROUTE,
+    SEARCH_ROUTE,
     ERRORS_ROUTE
 ]);
 

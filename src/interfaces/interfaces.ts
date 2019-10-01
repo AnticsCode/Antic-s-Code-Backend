@@ -40,3 +40,16 @@ export interface UserProfile {
   portfolio?: string;
   language?: string;
 }
+
+export interface SearchRequest {
+  value: string;
+  category?: string;
+  tag?: string;
+  advanced: boolean;
+  year?: string;
+  level?: string[];
+  badges?: string[];
+  stars?: number[];
+  type?: string[];
+  sort?: number;
+}

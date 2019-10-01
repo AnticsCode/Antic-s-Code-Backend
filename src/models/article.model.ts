@@ -15,7 +15,7 @@ const level = {
 }
 
 const ArticleSchema = new Schema({
-  title: { type: String, required: [true, 'Title required'], trim: true },
+  title: { type: String, required: [true, 'Title required'], trim: true, text: true },
   message: { type: String, required: [true, 'Message required'] },
   author: { type: String, required: [true, 'Author required'] },
   category: { type: String, required: [true, 'Category required'], enum: categories },

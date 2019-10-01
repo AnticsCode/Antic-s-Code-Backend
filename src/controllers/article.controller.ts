@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { Article, ARTICLE } from '../models/article.model';
-import { Stars } from '../models/stars.model';
 import { LIMIT } from '../config/server.config';
 import { Code } from '../interfaces/interfaces';
 import { countBy } from 'lodash';
@@ -163,7 +162,7 @@ ARTICLE_CTRL.getLastArticles = async (req: Request, res: Response) => {
         err
       });
     }
-  }).sort({ _id: -1 })
+  }).sort({ _id: -1})
     .limit(6);
 
   res.status(200).json({
