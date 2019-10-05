@@ -47,8 +47,6 @@ const searchArticle = (request: SearchRequest): Promise<ARTICLE[]> => {
   const type = request.type || ['_id'];
   const stars = request.stars || [5,4,3,2,1,0];
 
-  console.log(request);
-
   const sortObj: any = new Object();
 
   type.forEach((t: string) => {
@@ -58,7 +56,7 @@ const searchArticle = (request: SearchRequest): Promise<ARTICLE[]> => {
   return new Promise((res, req) => {
     Article.find({
       $and: [
-        { draft: false },
+        { draft: false, admin: false },
         {
           $or: [
             { title: { $regex: value, $options: 'is' }},

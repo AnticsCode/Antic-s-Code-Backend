@@ -21,7 +21,7 @@ ARTICLE_CTRL.getArticles = async (req: Request, res: Response) => {
     index: 0
   }
 
-  const articles = await Article.find({draft: false}, filter, (err) => {
+  const articles = await Article.find({draft: false, admin: false}, filter, (err) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -63,7 +63,7 @@ ARTICLE_CTRL.getAllArticles = async (req: Request, res: Response) => {
 
 ARTICLE_CTRL.getArticlesCount = async (req: Request, res: Response) => {
 
-  Article.countDocuments({draft: false}, (err, count) => {
+  Article.countDocuments({draft: false, admin: false}, (err, count) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -85,7 +85,8 @@ ARTICLE_CTRL.getArticlesByUser = async (req: Request, res: Response) => {
   const filter = {
     title: 1,
     slug: 1,
-    draft: 1
+    draft: 1,
+    admin: 1
   };
 
   const name = req.user.name;
@@ -121,7 +122,7 @@ ARTICLE_CTRL.getArticlesByCategoryCount = async (req: Request, res: Response) =>
     _id: 0
   }
 
-  const articles = await Article.find({draft: false}, filter, (err) => {
+  const articles = await Article.find({draft: false, admin: false}, filter, (err) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -154,7 +155,7 @@ ARTICLE_CTRL.getLastArticles = async (req: Request, res: Response) => {
     author: 0
   }
 
-  const articles = await Article.find({draft: false}, filter, (err) => {
+  const articles = await Article.find({draft: false, admin: false}, filter, (err) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -181,7 +182,7 @@ ARTICLE_CTRL.getMostLikedArticles = async (req: Request, res: Response) => {
     cover: 1
   }
 
-  const articles = await Article.find({draft: false}, filter, (err) => {
+  const articles = await Article.find({draft: false, admin: false}, filter, (err) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -203,7 +204,7 @@ ARTICLE_CTRL.getArticlesCode = async (req: Request, res: Response) => {
 
   let code: Code[] = [];
 
-  const articles = await Article.find({draft: false}, {code: 1}, (err) => {
+  const articles = await Article.find({draft: false, admin: false}, {code: 1}, (err) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -352,9 +353,6 @@ ARTICLE_CTRL.publishArticle = async (req: Request, res: Response) => {
 
   const id = req.params.id;
   const draft = req.body;
-
-  console.log(id);
-  console.log(draft);
 
   Article.updateOne({ _id: id }, { $set: draft }, ((err) => {
 
