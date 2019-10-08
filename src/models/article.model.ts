@@ -53,15 +53,15 @@ export interface ARTICLE extends Document {
   tags: string[];
   code?: Code[];
   level: string;
-  likes: number;
-  stars: number;
-  views: number;
+  likes?: number;
+  stars?: number;
+  views?: number;
   badges: string[];
   links: Link[];
   summary: string;
   index: Index[];
-  draft: boolean;
-  admin: boolean;
+  draft?: boolean;
+  admin?: boolean;
 }
 
 export const Article = model<ARTICLE>('Article', ArticleSchema);

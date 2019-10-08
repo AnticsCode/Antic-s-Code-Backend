@@ -30,11 +30,10 @@ ERROR_CTRL.saveError = async (req: Request, res: Response) => {
 
   const error: ERROR = req.body;
 
-  if (error.name == '' || error.status == null ||
-      error.text == '' || error.url == '' || error.message == '') {
+  if (error.name == '' || error.text == '' ||  error.message == '') {
       return res.status(400).json({
         ok: false,
-        message: 'Error needs Name, Status, Text and URL',
+        message: 'Error needs Name, Message, Text',
       });
   }
 
