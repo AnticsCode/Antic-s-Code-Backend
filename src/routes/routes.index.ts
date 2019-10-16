@@ -7,6 +7,7 @@ import LOGIN_ROUTES from './login/login.routes';
 import AUTH_ROUTES from './auth/auth.routes';
 import ERRORS_ROUTE from './errors/errors.route';
 import SEARCH_ROUTE from './search/search.route';
+import INTERACTION_ROUTES from './interactions/interactions.routes';
 
 const ROUTES = Router();
 
@@ -19,6 +20,7 @@ ROUTES.use('/',
     ARTICLES_ROUTE,
     CATEGORIES_ROUTE,
     SEARCH_ROUTE,
+    INTERACTION_ROUTES,
     ERRORS_ROUTE
 ]);
 

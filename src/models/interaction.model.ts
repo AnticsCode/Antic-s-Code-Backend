@@ -1,15 +1,25 @@
 import { Schema, model, Document } from 'mongoose';
 
 const InteractionSchema = new Schema({
-  reference: { type: Schema.Types.ObjectId, required: [true, 'Reference required'] },
+  article: {
+    type: Schema.Types.ObjectId,
+    ref: "Article",
+    required: [true, 'Reference required']
+  },
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: [true, 'User required']
+  },
   type: { type: String, required: [true, 'Type required'] },
-  user: { type: Schema.Types.ObjectId, ref: "User", required: [true, 'Reference required']  }
+  value: { type: Number, required: [true, 'Value required'] }
 });
 
 export interface INTERACTION extends Document {
-  reference: string;
-  type: string;
+  article: string;
   user: string;
+  type: string;
+  value: number;
 }
 
 export const Interaction = model<INTERACTION>('Interaction', InteractionSchema);
