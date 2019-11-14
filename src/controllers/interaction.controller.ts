@@ -41,15 +41,27 @@ INTERACTION_CTRL.doInteraction = async (req: Request, res: Response) => {
         }
       });
       } else {
-       await Interaction.updateOne({_id: int._id}, {$set:{value: body.value} }, (err) => {
-        if (err) {
-          return res.status(409).json({
-            ok: false,
-            message: 'Error updating Interaction',
-            err
+        if (body.type === 'like') {
+          await Interaction.updateOne({_id: int._id}, {$inc:{value: body.value} }, (err) => {
+            if (err) {
+              return res.status(409).json({
+                ok: false,
+                message: 'Error updating Interaction',
+                err
+              });
+            }
           });
+        } else if (body.type === 'star') {
+            await Interaction.updateOne({_id: int._id}, {$set:{value: body.value} }, (err) => {
+              if (err) {
+                return res.status(409).json({
+                  ok: false,
+                  message: 'Error updating Interaction',
+                  err
+                });
+              }
+            });
         }
-      });
     }
 
     const updated = await updateArticle(body);
@@ -79,6 +91,7 @@ const updateArticle = (body: INTERACTION): Promise<boolean> => {
       Interaction.find({ article: body.article, type: body.type }, {}, (async (err, int) => {
 
       if (err) { rej(); }
+      
       let avg: number = 0;
       let total: number = 0;
 
